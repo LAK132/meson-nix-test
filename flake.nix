@@ -1,0 +1,33 @@
+{
+	description = "meson-nix-test";
+
+	inputs = {
+		nixpkgs.url = "nixpkgs/nixos-26.05";
+	};
+
+	outputs = { self, nixpkgs }:
+	let
+		supportedSystems = [
+			"i686-linux"
+			"i686-windows"
+			"x86_64-linux"
+			"x86_64-windows"
+			"x86_64-darwin"
+			"aarch64-linux"
+			"aarch64-windows"
+			"aarch64-darwin"
+		];
+		forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+		nixpkgsFor = forAllSystems (system: import nixpkgs {
+			inherit system; overlays = [ self.overlays.default ];
+		});
+	in
+	{
+		overlays.default = import ./overlay.nix;
+
+		packages = forAllSystems (system: rec {
+			inherit (nixpkgsFor.${system}) meson-nix-test;
+			default = meson-nix-test;
+		});
+	};
+}
