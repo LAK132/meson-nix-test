@@ -1,5 +1,6 @@
 {
 	stdenv,
+	lib,
 	runCommand,
 	meson,
 	ninja,
@@ -29,7 +30,7 @@ stdenv.mkDerivation (finalAttrs: {
 	];
 
 	mesonFlags = [
-		"-Dhewwo=${hewwo}"
+		(lib.mesonOption "hewwo" hewwo)
 	];
 
 	buildPhase = ''
