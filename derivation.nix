@@ -2,7 +2,8 @@
 	stdenv,
 	runCommand,
 	meson,
-	ninja
+	ninja,
+	hewwo ? "true"
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -27,6 +28,10 @@ stdenv.mkDerivation (finalAttrs: {
 	buildInputs = [
 	];
 
+	mesonFlags = [
+		"-Dhewwo=${hewwo}"
+	];
+
 	buildPhase = ''
 		meson compile nix-test
 	'';
@@ -37,7 +42,9 @@ stdenv.mkDerivation (finalAttrs: {
 	'';
 
 	passthru.tests.run = runCommand "${finalAttrs.pname}-test-output" {} ''
-		[[ "$(${finalAttrs.finalPackage}/bin/${finalAttrs.pname})" == "Hello, Nix!" ]]
+		HELLO="$(${finalAttrs.finalPackage}/bin/${finalAttrs.pname})"
+		echo $HELLO
+		[[ ( ${hewwo} && "$HELLO" == "hewwo nix :3" ) || ( !${hewwo} && "$HELLO" == "Hello, Nix!" ) ]]
 		mkdir -p $out
 	'';
 })

@@ -26,11 +26,18 @@
 		overlays.default = import ./overlay.nix;
 
 		checks = forAllSystems (system: with nixpkgsFor.${system};
-			meson-nix-test.tests
+			meson-nix-test.tests // {
+				hello-test = hello-nix.tests.run;
+				hewwo-test = hewwo-nix.tests.run;
+			}
 		);
 
 		packages = forAllSystems (system: rec {
-			inherit (nixpkgsFor.${system}) meson-nix-test;
+			inherit
+				(nixpkgsFor.${system})
+				meson-nix-test
+				hello-nix
+				hewwo-nix;
 			default = meson-nix-test;
 		});
 	};

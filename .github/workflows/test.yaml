@@ -21,4 +21,4 @@ jobs:
           nix_path: nixpkgs=channel:nixos-26.05
       - run: nix-build default.nix
       - run: nix build .#meson-nix-test
-      - run: nix flake check .
+      - run: nix flake check -L .

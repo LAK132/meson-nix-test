@@ -9,6 +9,12 @@ project(
 	},
 )
 
+if get_option('hewwo')
+	add_project_arguments(
+		'-DHEWWO',
+		language: ['cpp'])
+endif
+
 executable(
 	'nix-test',
 	[
