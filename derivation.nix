@@ -4,7 +4,7 @@
 	runCommand,
 	meson,
 	ninja,
-	hewwo ? "true"
+	hewwo ? true
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -30,7 +30,7 @@ stdenv.mkDerivation (finalAttrs: {
 	];
 
 	mesonFlags = [
-		(lib.mesonOption "hewwo" hewwo)
+		(lib.mesonBool "hewwo" hewwo)
 	];
 
 	buildPhase = ''
@@ -42,10 +42,16 @@ stdenv.mkDerivation (finalAttrs: {
 		meson install
 	'';
 
-	passthru.tests.run = runCommand "${finalAttrs.pname}-test-output" {} ''
+	passthru.tests.run = runCommand "${finalAttrs.pname}-test-output" {} (''
 		HELLO="$(${finalAttrs.finalPackage}/bin/${finalAttrs.pname})"
-		echo $HELLO
-		[[ ( ${hewwo} && "$HELLO" == "hewwo nix :3" ) || ( !${hewwo} && "$HELLO" == "Hello, Nix!" ) ]]
+	''
+	+ lib.optionalString hewwo ''
+		[[ "$HELLO" == "hewwo nix :3" ]]
+	''
+	+ lib.optionalString (!hewwo) ''
+		[[ "$HELLO" == "Hello, Nix!" ]]
+	''
+	+ ''
 		mkdir -p $out
-	'';
+	'');
 })
